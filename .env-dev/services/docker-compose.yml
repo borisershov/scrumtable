@@ -1,0 +1,22 @@
+version: '2'
+
+services:
+  mysql:
+    image: 'bitnami/mysql:latest'
+    container_name: scrumtable-mysql
+    ports:
+    - 127.0.0.1:33306:3306
+    volumes:
+    - ./volumes/mysql/db-data:/bitnami/mysql/data
+    environment:
+    - MYSQL_USER=user
+    - MYSQL_DATABASE=db
+    - MYSQL_PASSWORD=password
+    - MYSQL_ROOT_PASSWORD=rootpassword
+  redis:
+    image: 'bitnami/redis:latest'
+    container_name: scrumtable-redis
+    ports:
+    - 127.0.0.1:36379:6379
+    environment:
+    - ALLOW_EMPTY_PASSWORD=yes

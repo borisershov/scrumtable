@@ -1,0 +1,4 @@
+/.project
+/.vscode
+/.env-dev/example.conf
+/.env-dev/services/volumes

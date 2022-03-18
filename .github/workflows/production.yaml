@@ -1,0 +1,20 @@
+name: Build and Deploy app to production environment
+on:
+  push:
+    tags:
+      - 'v*.*'
+jobs:
+  trigger:
+    name: Trigger Gitlab
+    runs-on: ubuntu-latest
+    steps:
+      - uses: addnab/docker-run-action@v3
+        with:
+          image: registry.gitlab.com/finestructure/pipeline-trigger:latest
+          options: -e GITHUB_REF_NAME=${{github.ref_name}} -e GITLAB_SERVER_HOST=${{secrets.GITLAB_SERVER_HOST}} -e GITLAB_API_TOKEN=${{secrets.GITLAB_API_TOKEN}} -e GITLAB_CI_TOKEN=${{secrets.GITLAB_CI_TOKEN}} -e GITLAB_PROJECT_ID=${{secrets.GITLAB_PROJECT_ID}}
+          run: |
+            trigger -h ${GITLAB_SERVER_HOST} \
+              -e TAG_NAME=${GITHUB_REF_NAME} \
+              -a "${GITLAB_API_TOKEN}" \
+              -p "${GITLAB_CI_TOKEN}" \
+              -t main ${GITLAB_PROJECT_ID}

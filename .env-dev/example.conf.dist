@@ -1,0 +1,10 @@
+logfile: stdout
+loglevel: debug
+mysql:
+  host: 127.0.0.1:33306
+  db: db
+  user: user
+  password: password
+telegram:
+  bot_api: BOT_API_TOKEN
+  redis: 127.0.0.1:36379
