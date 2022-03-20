@@ -215,7 +215,7 @@ func calendarRender(year, month int, useSprints bool) [][]tg.Button {
 			y, w := firstDate.ISOWeek()
 
 			bb = append(bb, tg.Button{
-				Text:       fmt.Sprintf("%d-%d", w, y),
+				Text:       fmt.Sprintf("#%d", w),
 				Identifier: "sprint:" + fmt.Sprintf("%d-%d", w, y),
 			})
 		}

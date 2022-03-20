@@ -46,7 +46,7 @@ func calendarState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 	}
 
 	return tg.StateHandlerRes{
-		Message:      "Выберите дату",
+		Message:      "Select a day or week to watch already created your issues or make a new one",
 		Buttons:      calendarRender(date.Year(), int(date.Month()), true),
 		StickMessage: true,
 	}, nil
