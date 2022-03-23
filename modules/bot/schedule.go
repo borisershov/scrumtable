@@ -9,7 +9,7 @@ import (
 	tg "github.com/nixys/nxs-go-telegram"
 )
 
-func scheduleState(t *tg.Telegram) (tg.StateHandlerRes, error) {
+func scheduleState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
 	buttons := [][]tg.Button{}
 
@@ -18,12 +18,12 @@ func scheduleState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 		return tg.StateHandlerRes{}, fmt.Errorf("can not extract user context in schedule state handler")
 	}
 
-	date, err := userCurDateGet(t.UserIDGet(), bCtx.m)
+	date, err := userCurDateGet(sess.UserIDGet(), bCtx.m)
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
 
-	issues, err := bCtx.m.IssuesGetByDate(t.UserIDGet(), date)
+	issues, err := bCtx.m.IssuesGetByDate(sess.UserIDGet(), date)
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -89,19 +89,19 @@ func scheduleState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 	}, nil
 }
 
-func scheduleMsg(t *tg.Telegram, uc tg.UpdateChain) (tg.MessageHandlerRes, error) {
+func scheduleMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error) {
 
 	bCtx, b := t.UsrCtxGet().(botCtx)
 	if b == false {
 		return tg.MessageHandlerRes{}, fmt.Errorf("can not extract user context in schedule message handler")
 	}
 
-	date, err := userCurDateGet(t.UserIDGet(), bCtx.m)
+	date, err := userCurDateGet(sess.UserIDGet(), bCtx.m)
 	if err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
 
-	if _, err := bCtx.m.IssueAdd(t.UserIDGet(), date, strings.Join(uc.MessageTextGet(), "; ")); err != nil {
+	if _, err := bCtx.m.IssueAdd(sess.UserIDGet(), date, strings.Join(sess.UpdateChain().MessageTextGet(), "; ")); err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
 
@@ -110,7 +110,7 @@ func scheduleMsg(t *tg.Telegram, uc tg.UpdateChain) (tg.MessageHandlerRes, error
 	}, nil
 }
 
-func scheduleCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.CallbackHandlerRes, error) {
+func scheduleCallback(t *tg.Telegram, sess *tg.Session, identifier string) (tg.CallbackHandlerRes, error) {
 
 	var r tg.CallbackHandlerRes
 
@@ -127,7 +127,7 @@ func scheduleCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.
 			return r, fmt.Errorf("can not extract user context in schedule callback handler")
 		}
 
-		if err := bCtx.m.SettingsSetCurDate(uc.UserIDGet(), value); err != nil {
+		if err := bCtx.m.SettingsSetCurDate(sess.UserIDGet(), value); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 
@@ -140,7 +140,7 @@ func scheduleCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.
 			return r, err
 		}
 
-		if err := t.SlotSave("issueID", id); err != nil {
+		if err := sess.SlotSave("issueID", id); err != nil {
 			return r, err
 		}
 
@@ -148,7 +148,7 @@ func scheduleCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.
 
 	case "sprint":
 
-		if err := t.SlotSave("sprint", value); err != nil {
+		if err := sess.SlotSave("sprint", value); err != nil {
 			return r, err
 		}
 

@@ -9,7 +9,7 @@ import (
 	tg "github.com/nixys/nxs-go-telegram"
 )
 
-func sprintState(t *tg.Telegram) (tg.StateHandlerRes, error) {
+func sprintState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
 	buttons := [][]tg.Button{}
 
@@ -18,7 +18,7 @@ func sprintState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 		return tg.StateHandlerRes{}, fmt.Errorf("can not extract user context in sprint state handler")
 	}
 
-	sprintDateRaw, e, err := t.SlotGet("sprint")
+	sprintDateRaw, e, err := sess.SlotGet("sprint")
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -31,12 +31,12 @@ func sprintState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 
 	sprintDate := sprintDateRaw.(string)
 
-	sprintIssues, err := bCtx.m.SprintIssuesGetByDate(t.UserIDGet(), sprintDate)
+	sprintIssues, err := bCtx.m.SprintIssuesGetByDate(sess.UserIDGet(), sprintDate)
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
 
-	curDate, err := userCurDateGet(t.UserIDGet(), bCtx.m)
+	curDate, err := userCurDateGet(sess.UserIDGet(), bCtx.m)
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -80,14 +80,14 @@ func sprintState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 	}, nil
 }
 
-func sprintMsg(t *tg.Telegram, uc tg.UpdateChain) (tg.MessageHandlerRes, error) {
+func sprintMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error) {
 
 	bCtx, b := t.UsrCtxGet().(botCtx)
 	if b == false {
 		return tg.MessageHandlerRes{}, fmt.Errorf("can not extract user context in sprint message handler")
 	}
 
-	sprintDateRaw, e, err := t.SlotGet("sprint")
+	sprintDateRaw, e, err := sess.SlotGet("sprint")
 	if err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
@@ -99,7 +99,7 @@ func sprintMsg(t *tg.Telegram, uc tg.UpdateChain) (tg.MessageHandlerRes, error) 
 
 	sprintDate := sprintDateRaw.(string)
 
-	sprintIssues, err := bCtx.m.SprintIssuesGetByDate(t.UserIDGet(), sprintDate)
+	sprintIssues, err := bCtx.m.SprintIssuesGetByDate(sess.UserIDGet(), sprintDate)
 	if err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
@@ -109,7 +109,7 @@ func sprintMsg(t *tg.Telegram, uc tg.UpdateChain) (tg.MessageHandlerRes, error) 
 		sprintGoal = true
 	}
 
-	if _, err := bCtx.m.SprintIssueAdd(t.UserIDGet(), sprintDate, sprintGoal, strings.Join(uc.MessageTextGet(), "; ")); err != nil {
+	if _, err := bCtx.m.SprintIssueAdd(sess.UserIDGet(), sprintDate, sprintGoal, strings.Join(sess.UpdateChain().MessageTextGet(), "; ")); err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
 
@@ -118,7 +118,7 @@ func sprintMsg(t *tg.Telegram, uc tg.UpdateChain) (tg.MessageHandlerRes, error) 
 	}, nil
 }
 
-func sprintCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.CallbackHandlerRes, error) {
+func sprintCallback(t *tg.Telegram, sess *tg.Session, identifier string) (tg.CallbackHandlerRes, error) {
 
 	var r tg.CallbackHandlerRes
 
@@ -137,7 +137,7 @@ func sprintCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.Ca
 			return tg.CallbackHandlerRes{}, err
 		}
 
-		if err := t.SlotSave("sprintIssueID", id); err != nil {
+		if err := sess.SlotSave("sprintIssueID", id); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 

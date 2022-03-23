@@ -132,14 +132,14 @@ func (b *Bot) Queue(ctx context.Context, ch chan error) {
 	}
 }
 
-func botInit(t *tg.Telegram, uc tg.UpdateChain) (tg.InitHandlerRes, error) {
+func botInit(t *tg.Telegram, sess *tg.Session) (tg.InitHandlerRes, error) {
 
 	bCtx, b := t.UsrCtxGet().(botCtx)
 	if b == false {
 		return tg.InitHandlerRes{}, fmt.Errorf("can not extract user context in botInit handler")
 	}
 
-	if _, err := userCurDateGet(t.UserIDGet(), bCtx.m); err != nil {
+	if _, err := userCurDateGet(sess.UserIDGet(), bCtx.m); err != nil {
 		return tg.InitHandlerRes{}, err
 	}
 

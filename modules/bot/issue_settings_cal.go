@@ -7,11 +7,11 @@ import (
 	tg "github.com/nixys/nxs-go-telegram"
 )
 
-func issueSettingsCalState(t *tg.Telegram) (tg.StateHandlerRes, error) {
+func issueSettingsCalState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
 	var date time.Time
 
-	c, e, err := t.SlotGet("calDate")
+	c, e, err := sess.SlotGet("calDate")
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -28,7 +28,7 @@ func issueSettingsCalState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 			return tg.StateHandlerRes{}, fmt.Errorf("can not extract user context in issueSettingsCal state handler")
 		}
 
-		ud, err := userCurDateGet(t.UserIDGet(), bCtx.m)
+		ud, err := userCurDateGet(sess.UserIDGet(), bCtx.m)
 		if err != nil {
 			return tg.StateHandlerRes{}, err
 		}
@@ -46,11 +46,11 @@ func issueSettingsCalState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 	}, nil
 }
 
-func issueSettingsCalCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.CallbackHandlerRes, error) {
+func issueSettingsCalCallback(t *tg.Telegram, sess *tg.Session, identifier string) (tg.CallbackHandlerRes, error) {
 
 	var r tg.CallbackHandlerRes
 
-	issueID, e, err := t.SlotGet("issueID")
+	issueID, e, err := sess.SlotGet("issueID")
 	if err != nil {
 		return tg.CallbackHandlerRes{}, err
 	}
@@ -75,11 +75,11 @@ func issueSettingsCalCallback(t *tg.Telegram, uc tg.UpdateChain, identifier stri
 			return r, fmt.Errorf("can not extract user context in issueSettingsCal callback handler")
 		}
 
-		if err := bCtx.m.IssueUpdateDate(int64(issueID.(float64)), uc.UserIDGet(), value); err != nil {
+		if err := bCtx.m.IssueUpdateDate(int64(issueID.(float64)), sess.UserIDGet(), value); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 
-		if err := t.SlotDel("issueID"); err != nil {
+		if err := sess.SlotDel("issueID"); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 
@@ -87,7 +87,7 @@ func issueSettingsCalCallback(t *tg.Telegram, uc tg.UpdateChain, identifier stri
 
 	case "month":
 
-		if err := t.SlotSave("calDate", value); err != nil {
+		if err := sess.SlotSave("calDate", value); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 

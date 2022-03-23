@@ -7,17 +7,17 @@ import (
 	tg "github.com/nixys/nxs-go-telegram"
 )
 
-func calendarCmd(t *tg.Telegram, uc tg.UpdateChain, cmd string, args string) (tg.CommandHandlerRes, error) {
+func calendarCmd(t *tg.Telegram, sess *tg.Session, cmd string, args string) (tg.CommandHandlerRes, error) {
 	return tg.CommandHandlerRes{
 		NextState: tg.SessState("cal"),
 	}, nil
 }
 
-func calendarState(t *tg.Telegram) (tg.StateHandlerRes, error) {
+func calendarState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
 	var date time.Time
 
-	c, e, err := t.SlotGet("calDate")
+	c, e, err := sess.SlotGet("calDate")
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -34,7 +34,7 @@ func calendarState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 			return tg.StateHandlerRes{}, fmt.Errorf("can not extract user context in calendar state handler")
 		}
 
-		ud, err := userCurDateGet(t.UserIDGet(), bCtx.m)
+		ud, err := userCurDateGet(sess.UserIDGet(), bCtx.m)
 		if err != nil {
 			return tg.StateHandlerRes{}, err
 		}
@@ -52,7 +52,7 @@ func calendarState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 	}, nil
 }
 
-func calendarCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.CallbackHandlerRes, error) {
+func calendarCallback(t *tg.Telegram, sess *tg.Session, identifier string) (tg.CallbackHandlerRes, error) {
 
 	var r tg.CallbackHandlerRes
 
@@ -69,11 +69,11 @@ func calendarCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.
 			return r, fmt.Errorf("can not extract user context in calendar callback handler")
 		}
 
-		if err := bCtx.m.SettingsSetCurDate(uc.UserIDGet(), value); err != nil {
+		if err := bCtx.m.SettingsSetCurDate(sess.UserIDGet(), value); err != nil {
 			return r, err
 		}
 
-		if err := t.SlotDel("calDate"); err != nil {
+		if err := sess.SlotDel("calDate"); err != nil {
 			return r, err
 		}
 
@@ -81,7 +81,7 @@ func calendarCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.
 
 	case "sprint":
 
-		if err := t.SlotSave("sprint", value); err != nil {
+		if err := sess.SlotSave("sprint", value); err != nil {
 			return r, err
 		}
 
@@ -89,7 +89,7 @@ func calendarCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.
 
 	case "month":
 
-		if err := t.SlotSave("calDate", value); err != nil {
+		if err := sess.SlotSave("calDate", value); err != nil {
 			return r, err
 		}
 

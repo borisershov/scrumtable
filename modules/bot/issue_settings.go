@@ -7,7 +7,7 @@ import (
 	tg "github.com/nixys/nxs-go-telegram"
 )
 
-func issueSettingsState(t *tg.Telegram) (tg.StateHandlerRes, error) {
+func issueSettingsState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
 	var r tg.StateHandlerRes
 
@@ -16,7 +16,7 @@ func issueSettingsState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 		return tg.StateHandlerRes{}, fmt.Errorf("can not extract user context in issueSettings state handler")
 	}
 
-	issueID, e, err := t.SlotGet("issueID")
+	issueID, e, err := sess.SlotGet("issueID")
 	if err != nil {
 		return r, err
 	}
@@ -27,7 +27,7 @@ func issueSettingsState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 		}, nil
 	}
 
-	issue, err := bCtx.m.IssueGetByID(int64(issueID.(float64)), t.UserIDGet())
+	issue, err := bCtx.m.IssueGetByID(int64(issueID.(float64)), sess.UserIDGet())
 	if err != nil {
 		return r, err
 	}
@@ -87,14 +87,14 @@ func issueSettingsState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 	}, nil
 }
 
-func issueSettingsCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string) (tg.CallbackHandlerRes, error) {
+func issueSettingsCallback(t *tg.Telegram, sess *tg.Session, identifier string) (tg.CallbackHandlerRes, error) {
 
 	bCtx, b := t.UsrCtxGet().(botCtx)
 	if b == false {
 		return tg.CallbackHandlerRes{}, fmt.Errorf("can not extract user context in issueSettings callback handler")
 	}
 
-	issueID, e, err := t.SlotGet("issueID")
+	issueID, e, err := sess.SlotGet("issueID")
 	if err != nil {
 		return tg.CallbackHandlerRes{}, err
 	}
@@ -109,7 +109,7 @@ func issueSettingsCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string)
 	switch identifier {
 	case "done":
 
-		issue, err := bCtx.m.IssueGetByID(id, t.UserIDGet())
+		issue, err := bCtx.m.IssueGetByID(id, sess.UserIDGet())
 		if err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
@@ -119,7 +119,7 @@ func issueSettingsCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string)
 			done = false
 		}
 
-		if err := bCtx.m.IssueSetDone(id, t.UserIDGet(), done); err != nil {
+		if err := bCtx.m.IssueSetDone(id, sess.UserIDGet(), done); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 
@@ -132,12 +132,12 @@ func issueSettingsCallback(t *tg.Telegram, uc tg.UpdateChain, identifier string)
 			NextState: tg.SessState("issueSettingsEdit"),
 		}, nil
 	case "del":
-		if err := bCtx.m.IssueDel(id, t.UserIDGet()); err != nil {
+		if err := bCtx.m.IssueDel(id, sess.UserIDGet()); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 	}
 
-	if err := t.SlotDel("issueID"); err != nil {
+	if err := sess.SlotDel("issueID"); err != nil {
 		return tg.CallbackHandlerRes{}, err
 	}
 

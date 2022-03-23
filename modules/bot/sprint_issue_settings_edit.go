@@ -7,14 +7,14 @@ import (
 	tg "github.com/nixys/nxs-go-telegram"
 )
 
-func sprintIssueSettingsEditState(t *tg.Telegram) (tg.StateHandlerRes, error) {
+func sprintIssueSettingsEditState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
 	bCtx, b := t.UsrCtxGet().(botCtx)
 	if b == false {
 		return tg.StateHandlerRes{}, fmt.Errorf("can not extract user context in sprintIssueSettingsEdit state handler")
 	}
 
-	sprintIssueID, e, err := t.SlotGet("sprintIssueID")
+	sprintIssueID, e, err := sess.SlotGet("sprintIssueID")
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -25,7 +25,7 @@ func sprintIssueSettingsEditState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 		}, nil
 	}
 
-	sprintIssue, err := bCtx.m.SprintIssueGetByID(int64(sprintIssueID.(float64)), t.UserIDGet())
+	sprintIssue, err := bCtx.m.SprintIssueGetByID(int64(sprintIssueID.(float64)), sess.UserIDGet())
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -36,9 +36,9 @@ func sprintIssueSettingsEditState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 	}, nil
 }
 
-func sprintIssueSettingsEditMsg(t *tg.Telegram, uc tg.UpdateChain) (tg.MessageHandlerRes, error) {
+func sprintIssueSettingsEditMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error) {
 
-	sprintIssueID, e, err := t.SlotGet("sprintIssueID")
+	sprintIssueID, e, err := sess.SlotGet("sprintIssueID")
 	if err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
@@ -53,11 +53,11 @@ func sprintIssueSettingsEditMsg(t *tg.Telegram, uc tg.UpdateChain) (tg.MessageHa
 		return tg.MessageHandlerRes{}, fmt.Errorf("can not extract user context in sprintIssueSettingsEdit message handler")
 	}
 
-	if err := bCtx.m.SprintIssueUpdateText(int64(sprintIssueID.(float64)), t.UserIDGet(), strings.Join(uc.MessageTextGet(), "; ")); err != nil {
+	if err := bCtx.m.SprintIssueUpdateText(int64(sprintIssueID.(float64)), sess.UserIDGet(), strings.Join(sess.UpdateChain().MessageTextGet(), "; ")); err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
 
-	if err := t.SlotDel("sprintIssueID"); err != nil {
+	if err := sess.SlotDel("sprintIssueID"); err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
 

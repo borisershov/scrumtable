@@ -7,9 +7,9 @@ import (
 	tg "github.com/nixys/nxs-go-telegram"
 )
 
-func issueSettingsEditState(t *tg.Telegram) (tg.StateHandlerRes, error) {
+func issueSettingsEditState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
-	issueID, e, err := t.SlotGet("issueID")
+	issueID, e, err := sess.SlotGet("issueID")
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -25,7 +25,7 @@ func issueSettingsEditState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 		return tg.StateHandlerRes{}, fmt.Errorf("can not extract user context in issueSettingsEdit state handler")
 	}
 
-	issue, err := bCtx.m.IssueGetByID(int64(issueID.(float64)), t.UserIDGet())
+	issue, err := bCtx.m.IssueGetByID(int64(issueID.(float64)), sess.UserIDGet())
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -36,9 +36,9 @@ func issueSettingsEditState(t *tg.Telegram) (tg.StateHandlerRes, error) {
 	}, nil
 }
 
-func issueSettingsEditMsg(t *tg.Telegram, uc tg.UpdateChain) (tg.MessageHandlerRes, error) {
+func issueSettingsEditMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error) {
 
-	issueID, e, err := t.SlotGet("issueID")
+	issueID, e, err := sess.SlotGet("issueID")
 	if err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
@@ -53,11 +53,11 @@ func issueSettingsEditMsg(t *tg.Telegram, uc tg.UpdateChain) (tg.MessageHandlerR
 		return tg.MessageHandlerRes{}, fmt.Errorf("can not extract user context in issueSettingsEdit message handler")
 	}
 
-	if err := bCtx.m.IssueUpdateText(int64(issueID.(float64)), t.UserIDGet(), strings.Join(uc.MessageTextGet(), "; ")); err != nil {
+	if err := bCtx.m.IssueUpdateText(int64(issueID.(float64)), sess.UserIDGet(), strings.Join(sess.UpdateChain().MessageTextGet(), "; ")); err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
 
-	if err := t.SlotDel("issueID"); err != nil {
+	if err := sess.SlotDel("issueID"); err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
 
