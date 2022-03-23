@@ -1,8 +1,8 @@
 package ctx
 
 import (
-	"example/db/mysql"
-	tgbot "example/modules/bot"
+	"github.com/nixys/scrumtable/db/mysql"
+	tgbot "github.com/nixys/scrumtable/modules/bot"
 
 	appctx "github.com/nixys/nxs-go-appctx/v2"
 )

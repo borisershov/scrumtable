@@ -2,10 +2,11 @@ package tgbot
 
 import (
 	"context"
-	"example/db/mysql"
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/nixys/scrumtable/db/mysql"
 
 	tg "github.com/nixys/nxs-go-telegram"
 )

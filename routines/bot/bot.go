@@ -2,7 +2,8 @@ package bot
 
 import (
 	"context"
-	"example/ctx"
+
+	"github.com/nixys/scrumtable/ctx"
 
 	appctx "github.com/nixys/nxs-go-appctx/v2"
 )

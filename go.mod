@@ -1,4 +1,4 @@
-module example
+module github.com/nixys/scrumtable
 
 go 1.17
 

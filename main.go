@@ -6,12 +6,8 @@ import (
 	"os"
 	"syscall"
 
-	"example/ctx"
-	//botqueue "example/routines/bot-queue"
-	//botupdatesget "example/routines/bot-updates-get"
-	bot "example/routines/bot"
-
-	//userscounter "example/routines/users-counter"
+	"github.com/nixys/scrumtable/ctx"
+	bot "github.com/nixys/scrumtable/routines/bot"
 
 	appctx "github.com/nixys/nxs-go-appctx/v2"
 
