@@ -44,8 +44,8 @@ github.com/nixys/nxs-go-appctx/v2 v2.0.0 h1:t5zLCcT9y8SqTm5OhnTQlRMQmOWNE+KNbAU3
 github.com/nixys/nxs-go-appctx/v2 v2.0.0/go.mod h1:kw7Z83tJKiGrZ3cWp0wShe+e1wod6QEeJAaYxx/1Fq0=
 github.com/nixys/nxs-go-conf v1.0.1 h1:yR2KwNx1CRy8yH7xgr1P6aGNAN6G/5WR06uZIS1EyBc=
 github.com/nixys/nxs-go-conf v1.0.1/go.mod h1:m2zxhmA7YfWdFdmTQZSqP0+C16oRUztfXss+yhbScgY=
-github.com/nixys/nxs-go-telegram v0.0.0-20220323113925-a471526122b6 h1:+Ovo5vD1N9A/sJ6neQObgCKMuqmhqqlManNqxSqMDTU=
-github.com/nixys/nxs-go-telegram v0.0.0-20220323113925-a471526122b6/go.mod h1:Y7mNeVUKz3rN3cwDHVoXKC9QqqT7f2QKddgOw8prNpw=
+github.com/nixys/nxs-go-telegram v0.0.0-20220324084343-8f23fd7d1a17 h1:cV27ozmYBpjoxx54GK+RYgI+Yx7Ef3eiAhpJh0zsGjQ=
+github.com/nixys/nxs-go-telegram v0.0.0-20220324084343-8f23fd7d1a17/go.mod h1:Y7mNeVUKz3rN3cwDHVoXKC9QqqT7f2QKddgOw8prNpw=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
 github.com/nxadm/tail v1.4.8 h1:nPr65rt6Y5JFSKQO7qToXr7pePgD6Gwiw05lkbyAQTE=
 github.com/nxadm/tail v1.4.8/go.mod h1:+ncqLTQzXmGhMZNUePPaPqPvBxHAIsmXswZKocGu+AU=

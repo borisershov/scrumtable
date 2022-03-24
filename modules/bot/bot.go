@@ -38,8 +38,9 @@ func Setup(settings Settings) (Bot, error) {
 
 		tg.Description{
 
-			Commands: map[string]tg.CommandMeta{
-				"calendar": {
+			Commands: []tg.Command{
+				{
+					Command:     "calendar",
 					Description: "Show calendar",
 					Handler:     calendarCmd,
 				},
