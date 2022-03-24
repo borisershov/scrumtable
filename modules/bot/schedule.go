@@ -79,7 +79,7 @@ func scheduleState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error)
 
 	isToday := ""
 	if d.Truncate(24*time.Hour).Equal(time.Now().Truncate(24*time.Hour)) == true {
-		isToday = " \\[today]"
+		isToday = " 🟢"
 	}
 
 	return tg.StateHandlerRes{
