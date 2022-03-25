@@ -44,6 +44,11 @@ func Setup(settings Settings) (Bot, error) {
 					Description: "Show calendar",
 					Handler:     calendarCmd,
 				},
+				{
+					Command:     "curdate",
+					Description: "Go to current date",
+					Handler:     calendarCurDateCmd,
+				},
 			},
 
 			InitHandler: botInit,
@@ -183,6 +188,12 @@ func calendarRender(year, month int, useSprints bool) [][]tg.Button {
 	nextDate := time.Date(year, time.Month(month+1), 1, 0, 0, 0, 0, time.UTC)
 
 	buttons := [][]tg.Button{
+		{
+			{
+				Text:       time.Now().Format("January, 2006"),
+				Identifier: "month:" + time.Now().Format("2006-01-02"),
+			},
+		},
 		{
 			{
 				Text:       "⬅️ " + prevDate.Format("January, 2006"),

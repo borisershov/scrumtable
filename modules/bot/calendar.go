@@ -13,6 +13,29 @@ func calendarCmd(t *tg.Telegram, sess *tg.Session, cmd string, args string) (tg.
 	}, nil
 }
 
+func calendarCurDateCmd(t *tg.Telegram, sess *tg.Session, cmd string, args string) (tg.CommandHandlerRes, error) {
+
+	bCtx, b := t.UsrCtxGet().(botCtx)
+	if b == false {
+		return tg.CommandHandlerRes{}, fmt.Errorf("can not extract user context in calendar current date cmd handler")
+	}
+
+	d := time.Now().Format("2006-01-02")
+
+	// Set current date for user
+	if err := bCtx.m.SettingsSetCurDate(sess.UserIDGet(), d); err != nil {
+		return tg.CommandHandlerRes{}, err
+	}
+
+	if err := sess.SlotDel("calDate"); err != nil {
+		return tg.CommandHandlerRes{}, err
+	}
+
+	return tg.CommandHandlerRes{
+		NextState: tg.SessState("schedule"),
+	}, nil
+}
+
 func calendarState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
 	var date time.Time
