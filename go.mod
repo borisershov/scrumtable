@@ -7,7 +7,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/nixys/nxs-go-appctx/v2 v2.0.0
 	github.com/nixys/nxs-go-conf v1.0.1
-	github.com/nixys/nxs-go-telegram v0.0.0-20220324084343-8f23fd7d1a17
+	github.com/nixys/nxs-go-telegram v0.0.0-20220404120958-109de92a0dcc
 	github.com/pborman/getopt/v2 v2.1.0
 	github.com/sirupsen/logrus v1.8.1
 )
@@ -18,7 +18,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
-	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
-	golang.org/x/sys v0.0.0-20220319134239-a9b59b0215f8 // indirect
+	golang.org/x/net v0.0.0-20220403103023-749bd193bc2b // indirect
+	golang.org/x/sys v0.0.0-20220403205710-6acee93ad0eb // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

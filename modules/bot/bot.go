@@ -25,10 +25,10 @@ type botCtx struct {
 	m mysql.MySQL
 }
 
-func Setup(settings Settings) (Bot, error) {
+func Init(settings Settings) (Bot, error) {
 
 	// Setup the bot
-	bot, err := tg.Setup(
+	bot, err := tg.Init(
 		tg.Settings{
 			BotSettings: tg.SettingsBot{
 				BotAPI: settings.APIToken,

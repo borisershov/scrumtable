@@ -38,15 +38,18 @@ func calendarCurDateCmd(t *tg.Telegram, sess *tg.Session, cmd string, args strin
 
 func calendarState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
-	var date time.Time
+	var (
+		date time.Time
+		c    string
+	)
 
-	c, e, err := sess.SlotGet("calDate")
+	e, err := sess.SlotGet("calDate", &c)
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
 
 	if e == true {
-		date, err = time.Parse("2006-01-02", c.(string))
+		date, err = time.Parse("2006-01-02", c)
 		if err != nil {
 			return tg.StateHandlerRes{}, err
 		}

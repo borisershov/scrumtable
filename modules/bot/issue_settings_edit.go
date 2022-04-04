@@ -9,7 +9,9 @@ import (
 
 func issueSettingsEditState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
-	issueID, e, err := sess.SlotGet("issueID")
+	var issueID int64
+
+	e, err := sess.SlotGet("issueID", &issueID)
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -25,7 +27,7 @@ func issueSettingsEditState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRe
 		return tg.StateHandlerRes{}, fmt.Errorf("can not extract user context in issueSettingsEdit state handler")
 	}
 
-	issue, err := bCtx.m.IssueGetByID(int64(issueID.(float64)), sess.UserIDGet())
+	issue, err := bCtx.m.IssueGetByID(issueID, sess.UserIDGet())
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -38,7 +40,9 @@ func issueSettingsEditState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRe
 
 func issueSettingsEditMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error) {
 
-	issueID, e, err := sess.SlotGet("issueID")
+	var issueID int64
+
+	e, err := sess.SlotGet("issueID", &issueID)
 	if err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
@@ -53,7 +57,7 @@ func issueSettingsEditMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRe
 		return tg.MessageHandlerRes{}, fmt.Errorf("can not extract user context in issueSettingsEdit message handler")
 	}
 
-	if err := bCtx.m.IssueUpdateText(int64(issueID.(float64)), sess.UserIDGet(), strings.Join(sess.UpdateChain().MessageTextGet(), "; ")); err != nil {
+	if err := bCtx.m.IssueUpdateText(issueID, sess.UserIDGet(), strings.Join(sess.UpdateChain().MessageTextGet(), "; ")); err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
 

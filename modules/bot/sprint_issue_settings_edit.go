@@ -9,12 +9,14 @@ import (
 
 func sprintIssueSettingsEditState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
+	var sprintIssueID int64
+
 	bCtx, b := t.UsrCtxGet().(botCtx)
 	if b == false {
 		return tg.StateHandlerRes{}, fmt.Errorf("can not extract user context in sprintIssueSettingsEdit state handler")
 	}
 
-	sprintIssueID, e, err := sess.SlotGet("sprintIssueID")
+	e, err := sess.SlotGet("sprintIssueID", &sprintIssueID)
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -25,7 +27,7 @@ func sprintIssueSettingsEditState(t *tg.Telegram, sess *tg.Session) (tg.StateHan
 		}, nil
 	}
 
-	sprintIssue, err := bCtx.m.SprintIssueGetByID(int64(sprintIssueID.(float64)), sess.UserIDGet())
+	sprintIssue, err := bCtx.m.SprintIssueGetByID(sprintIssueID, sess.UserIDGet())
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -38,7 +40,9 @@ func sprintIssueSettingsEditState(t *tg.Telegram, sess *tg.Session) (tg.StateHan
 
 func sprintIssueSettingsEditMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error) {
 
-	sprintIssueID, e, err := sess.SlotGet("sprintIssueID")
+	var sprintIssueID int64
+
+	e, err := sess.SlotGet("sprintIssueID", &sprintIssueID)
 	if err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
@@ -53,7 +57,7 @@ func sprintIssueSettingsEditMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHan
 		return tg.MessageHandlerRes{}, fmt.Errorf("can not extract user context in sprintIssueSettingsEdit message handler")
 	}
 
-	if err := bCtx.m.SprintIssueUpdateText(int64(sprintIssueID.(float64)), sess.UserIDGet(), strings.Join(sess.UpdateChain().MessageTextGet(), "; ")); err != nil {
+	if err := bCtx.m.SprintIssueUpdateText(sprintIssueID, sess.UserIDGet(), strings.Join(sess.UpdateChain().MessageTextGet(), "; ")); err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
 

@@ -8,12 +8,17 @@ import (
 
 func sprintIssueSettingsState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
+	var (
+		sprintDate    string
+		sprintIssueID int64
+	)
+
 	bCtx, b := t.UsrCtxGet().(botCtx)
 	if b == false {
 		return tg.StateHandlerRes{}, fmt.Errorf("can not extract user context in sprintIssueSettings state handler")
 	}
 
-	sprintDate, e, err := sess.SlotGet("sprint")
+	e, err := sess.SlotGet("sprint", &sprintDate)
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -24,7 +29,7 @@ func sprintIssueSettingsState(t *tg.Telegram, sess *tg.Session) (tg.StateHandler
 		}, nil
 	}
 
-	sprintIssueID, e, err := sess.SlotGet("sprintIssueID")
+	e, err = sess.SlotGet("sprintIssueID", &sprintIssueID)
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -35,13 +40,13 @@ func sprintIssueSettingsState(t *tg.Telegram, sess *tg.Session) (tg.StateHandler
 		}, nil
 	}
 
-	issue, err := bCtx.m.SprintIssueGetByID(int64(sprintIssueID.(float64)), sess.UserIDGet())
+	issue, err := bCtx.m.SprintIssueGetByID(sprintIssueID, sess.UserIDGet())
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
 
 	return tg.StateHandlerRes{
-		Message: fmt.Sprintf("Issue: `%s`\nSprint: %s", issue.Text, sprintDate.(string)),
+		Message: fmt.Sprintf("Issue: `%s`\nSprint: %s", issue.Text, sprintDate),
 		Buttons: [][]tg.Button{
 			{
 				{
@@ -80,12 +85,17 @@ func sprintIssueSettingsState(t *tg.Telegram, sess *tg.Session) (tg.StateHandler
 
 func sprintIssueSettingsCallback(t *tg.Telegram, sess *tg.Session, identifier string) (tg.CallbackHandlerRes, error) {
 
+	var (
+		sprintIssueID int64
+		sprintDate    string
+	)
+
 	bCtx, b := t.UsrCtxGet().(botCtx)
 	if b == false {
 		return tg.CallbackHandlerRes{}, fmt.Errorf("can not extract user context in sprintIssueSettings callback handler")
 	}
 
-	sprintIssueID, e, err := sess.SlotGet("sprintIssueID")
+	e, err := sess.SlotGet("sprintIssueID", &sprintIssueID)
 	if err != nil {
 		return tg.CallbackHandlerRes{}, err
 	}
@@ -95,12 +105,10 @@ func sprintIssueSettingsCallback(t *tg.Telegram, sess *tg.Session, identifier st
 		}, nil
 	}
 
-	id := int64(sprintIssueID.(float64))
-
 	switch identifier {
 	case "done":
 
-		sprintIssue, err := bCtx.m.SprintIssueGetByID(id, sess.UserIDGet())
+		sprintIssue, err := bCtx.m.SprintIssueGetByID(sprintIssueID, sess.UserIDGet())
 		if err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
@@ -110,13 +118,13 @@ func sprintIssueSettingsCallback(t *tg.Telegram, sess *tg.Session, identifier st
 			done = false
 		}
 
-		if err := bCtx.m.SprintIssueSetDone(id, sess.UserIDGet(), done); err != nil {
+		if err := bCtx.m.SprintIssueSetDone(sprintIssueID, sess.UserIDGet(), done); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 
 	case "goal":
 
-		sprintDate, e, err := sess.SlotGet("sprint")
+		e, err := sess.SlotGet("sprint", &sprintDate)
 		if err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
@@ -126,7 +134,7 @@ func sprintIssueSettingsCallback(t *tg.Telegram, sess *tg.Session, identifier st
 			}, nil
 		}
 
-		sprintIssues, err := bCtx.m.SprintIssuesGetByDate(sess.UserIDGet(), sprintDate.(string))
+		sprintIssues, err := bCtx.m.SprintIssuesGetByDate(sess.UserIDGet(), sprintDate)
 		if err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
@@ -134,14 +142,14 @@ func sprintIssueSettingsCallback(t *tg.Telegram, sess *tg.Session, identifier st
 		// Find previous sprint issue set as goal
 		var idToUnGoal int64
 		for _, si := range sprintIssues {
-			if si.Goal == true && si.ID != id {
+			if si.Goal == true && si.ID != sprintIssueID {
 				idToUnGoal = si.ID
 				break
 			}
 		}
 
 		// Set current issue as sprint goal
-		if err := bCtx.m.SprintIssueSetGoal(id, sess.UserIDGet(), true); err != nil {
+		if err := bCtx.m.SprintIssueSetGoal(sprintIssueID, sess.UserIDGet(), true); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 
@@ -157,7 +165,7 @@ func sprintIssueSettingsCallback(t *tg.Telegram, sess *tg.Session, identifier st
 			NextState: tg.SessState("sprintIssueSettingsEdit"),
 		}, nil
 	case "del":
-		if err := bCtx.m.SprintIssueDel(id, sess.UserIDGet()); err != nil {
+		if err := bCtx.m.SprintIssueDel(sprintIssueID, sess.UserIDGet()); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 	}

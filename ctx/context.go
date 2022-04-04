@@ -37,7 +37,7 @@ func (c *Ctx) Init(opts appctx.CustomContextFuncOpts) (appctx.CfgData, error) {
 		return appctx.CfgData{}, err
 	}
 
-	c.Bot, err = tgbot.Setup(tgbot.Settings{
+	c.Bot, err = tgbot.Init(tgbot.Settings{
 		MySQL:     c.MySQL,
 		APIToken:  c.Conf.Telegram.BotAPI,
 		RedisHost: c.Conf.Telegram.RedisHost,

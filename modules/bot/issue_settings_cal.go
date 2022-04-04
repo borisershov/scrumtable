@@ -9,15 +9,18 @@ import (
 
 func issueSettingsCalState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
-	var date time.Time
+	var (
+		date time.Time
+		c    string
+	)
 
-	c, e, err := sess.SlotGet("calDate")
+	e, err := sess.SlotGet("calDate", &c)
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
 
 	if e == true {
-		date, err = time.Parse("2006-01-02", c.(string))
+		date, err = time.Parse("2006-01-02", c)
 		if err != nil {
 			return tg.StateHandlerRes{}, err
 		}
@@ -48,9 +51,12 @@ func issueSettingsCalState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes
 
 func issueSettingsCalCallback(t *tg.Telegram, sess *tg.Session, identifier string) (tg.CallbackHandlerRes, error) {
 
-	var r tg.CallbackHandlerRes
+	var (
+		r       tg.CallbackHandlerRes
+		issueID int64
+	)
 
-	issueID, e, err := sess.SlotGet("issueID")
+	e, err := sess.SlotGet("issueID", &issueID)
 	if err != nil {
 		return tg.CallbackHandlerRes{}, err
 	}
@@ -75,7 +81,7 @@ func issueSettingsCalCallback(t *tg.Telegram, sess *tg.Session, identifier strin
 			return r, fmt.Errorf("can not extract user context in issueSettingsCal callback handler")
 		}
 
-		if err := bCtx.m.IssueUpdateDate(int64(issueID.(float64)), sess.UserIDGet(), value); err != nil {
+		if err := bCtx.m.IssueUpdateDate(issueID, sess.UserIDGet(), value); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 

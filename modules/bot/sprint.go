@@ -11,6 +11,8 @@ import (
 
 func sprintState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
+	var sprintDate string
+
 	buttons := [][]tg.Button{}
 
 	bCtx, b := t.UsrCtxGet().(botCtx)
@@ -18,7 +20,7 @@ func sprintState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 		return tg.StateHandlerRes{}, fmt.Errorf("can not extract user context in sprint state handler")
 	}
 
-	sprintDateRaw, e, err := sess.SlotGet("sprint")
+	e, err := sess.SlotGet("sprint", &sprintDate)
 	if err != nil {
 		return tg.StateHandlerRes{}, err
 	}
@@ -28,8 +30,6 @@ func sprintState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 			StickMessage: true,
 		}, nil
 	}
-
-	sprintDate := sprintDateRaw.(string)
 
 	sprintIssues, err := bCtx.m.SprintIssuesGetByDate(sess.UserIDGet(), sprintDate)
 	if err != nil {
@@ -82,12 +82,14 @@ func sprintState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
 
 func sprintMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error) {
 
+	var sprintDate string
+
 	bCtx, b := t.UsrCtxGet().(botCtx)
 	if b == false {
 		return tg.MessageHandlerRes{}, fmt.Errorf("can not extract user context in sprint message handler")
 	}
 
-	sprintDateRaw, e, err := sess.SlotGet("sprint")
+	e, err := sess.SlotGet("sprint", &sprintDate)
 	if err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
@@ -96,8 +98,6 @@ func sprintMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error) {
 			NextState: tg.SessState("schedule"),
 		}, nil
 	}
-
-	sprintDate := sprintDateRaw.(string)
 
 	sprintIssues, err := bCtx.m.SprintIssuesGetByDate(sess.UserIDGet(), sprintDate)
 	if err != nil {
