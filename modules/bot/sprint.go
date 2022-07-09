@@ -109,8 +109,11 @@ func sprintMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error) {
 		sprintGoal = true
 	}
 
-	if _, err := bCtx.m.SprintIssueAdd(sess.UserIDGet(), sprintDate, sprintGoal, strings.Join(sess.UpdateChain().MessageTextGet(), "; ")); err != nil {
-		return tg.MessageHandlerRes{}, err
+	// Create new issue for every message line
+	for _, m := range strings.Split(strings.Join(sess.UpdateChain().MessageTextGet(), "\n"), "\n") {
+		if _, err := bCtx.m.SprintIssueAdd(sess.UserIDGet(), sprintDate, sprintGoal, m); err != nil {
+			return tg.MessageHandlerRes{}, err
+		}
 	}
 
 	return tg.MessageHandlerRes{

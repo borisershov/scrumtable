@@ -101,8 +101,11 @@ func scheduleMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error)
 		return tg.MessageHandlerRes{}, err
 	}
 
-	if _, err := bCtx.m.IssueAdd(sess.UserIDGet(), date, strings.Join(sess.UpdateChain().MessageTextGet(), "; ")); err != nil {
-		return tg.MessageHandlerRes{}, err
+	// Create new issue for every message line
+	for _, m := range strings.Split(strings.Join(sess.UpdateChain().MessageTextGet(), "\n"), "\n") {
+		if _, err := bCtx.m.IssueAdd(sess.UserIDGet(), date, m); err != nil {
+			return tg.MessageHandlerRes{}, err
+		}
 	}
 
 	return tg.MessageHandlerRes{
