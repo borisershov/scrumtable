@@ -7,6 +7,7 @@ import (
 	"time"
 
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/scrumtable/ds/mysql"
 )
 
 func scheduleState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
@@ -103,7 +104,13 @@ func scheduleMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error)
 
 	// Create new issue for every message line
 	for _, m := range strings.Split(strings.Join(sess.UpdateChain().MessageTextGet(), "\n"), "\n") {
-		if _, err := bCtx.m.IssueAdd(sess.UserIDGet(), date, m); err != nil {
+		if _, err := bCtx.m.IssueCreate(mysql.IssueCreateData{
+			TlgrmChatID: sess.UserIDGet(),
+			Date:        date,
+			CreatedAt:   date,
+			Done:        false,
+			Text:        m,
+		}); err != nil {
 			return tg.MessageHandlerRes{}, err
 		}
 	}
@@ -130,7 +137,10 @@ func scheduleCallback(t *tg.Telegram, sess *tg.Session, identifier string) (tg.C
 			return r, fmt.Errorf("can not extract user context in schedule callback handler")
 		}
 
-		if err := bCtx.m.SettingsSetCurDate(sess.UserIDGet(), value); err != nil {
+		if _, err := bCtx.m.SettingsSet(mysql.SettingsSetData{
+			TlgrmChatID: sess.UserIDGet(),
+			CurrentDate: value,
+		}); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 

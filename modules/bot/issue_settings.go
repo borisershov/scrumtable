@@ -5,6 +5,7 @@ import (
 	"time"
 
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/scrumtable/ds/mysql"
 )
 
 func issueSettingsState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
@@ -122,7 +123,11 @@ func issueSettingsCallback(t *tg.Telegram, sess *tg.Session, identifier string) 
 			done = false
 		}
 
-		if err := bCtx.m.IssueSetDone(issueID, sess.UserIDGet(), done); err != nil {
+		if _, err := bCtx.m.IssueUpdate(mysql.IssueUpdateData{
+			ID:          issueID,
+			TlgrmChatID: sess.UserIDGet(),
+			Done:        &done,
+		}); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 

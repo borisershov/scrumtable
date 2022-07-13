@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nixys/scrumtable/db/mysql"
+	"github.com/nixys/scrumtable/ds/mysql"
 
 	tg "github.com/nixys/nxs-go-telegram"
 )
@@ -161,19 +161,22 @@ func botInit(t *tg.Telegram, sess *tg.Session) (tg.InitHandlerRes, error) {
 func userCurDateGet(tID int64, m mysql.MySQL) (string, error) {
 
 	// Get user current date
-	d, err := m.SettingsGetCurDate(tID)
+	s, err := m.SettingsGet(tID)
 	if err != nil {
 		return "", err
 	}
 
-	if len(d) > 0 {
-		return d, nil
+	if len(s.CurrentDate) > 0 {
+		return s.CurrentDate, nil
 	}
 
-	d = time.Now().Format("2006-01-02")
+	d := time.Now().Format("2006-01-02")
 
 	// Set current date for user
-	if err := m.SettingsSetCurDate(tID, d); err != nil {
+	if _, err := m.SettingsSet(mysql.SettingsSetData{
+		TlgrmChatID: tID,
+		CurrentDate: d,
+	}); err != nil {
 		return "", err
 	}
 

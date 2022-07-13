@@ -5,6 +5,7 @@ import (
 	"time"
 
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/scrumtable/ds/mysql"
 )
 
 func issueSettingsCalState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
@@ -81,7 +82,11 @@ func issueSettingsCalCallback(t *tg.Telegram, sess *tg.Session, identifier strin
 			return r, fmt.Errorf("can not extract user context in issueSettingsCal callback handler")
 		}
 
-		if err := bCtx.m.IssueUpdateDate(issueID, sess.UserIDGet(), value); err != nil {
+		if _, err := bCtx.m.IssueUpdate(mysql.IssueUpdateData{
+			ID:          issueID,
+			TlgrmChatID: sess.UserIDGet(),
+			Date:        &value,
+		}); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 

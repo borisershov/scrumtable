@@ -7,6 +7,7 @@ import (
 	"time"
 
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/scrumtable/ds/mysql"
 )
 
 func sprintState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
@@ -111,7 +112,13 @@ func sprintMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error) {
 
 	// Create new issue for every message line
 	for _, m := range strings.Split(strings.Join(sess.UpdateChain().MessageTextGet(), "\n"), "\n") {
-		if _, err := bCtx.m.SprintIssueAdd(sess.UserIDGet(), sprintDate, sprintGoal, m); err != nil {
+		if _, err := bCtx.m.SprintIssueCreate(mysql.SprintIssueCreateData{
+			TlgrmChatID: sess.UserIDGet(),
+			Date:        sprintDate,
+			Goal:        sprintGoal,
+			Done:        false,
+			Text:        m,
+		}); err != nil {
 			return tg.MessageHandlerRes{}, err
 		}
 	}

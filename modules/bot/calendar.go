@@ -5,6 +5,7 @@ import (
 	"time"
 
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/scrumtable/ds/mysql"
 )
 
 func calendarCmd(t *tg.Telegram, sess *tg.Session, cmd string, args string) (tg.CommandHandlerRes, error) {
@@ -20,10 +21,11 @@ func calendarCurDateCmd(t *tg.Telegram, sess *tg.Session, cmd string, args strin
 		return tg.CommandHandlerRes{}, fmt.Errorf("can not extract user context in calendar current date cmd handler")
 	}
 
-	d := time.Now().Format("2006-01-02")
-
 	// Set current date for user
-	if err := bCtx.m.SettingsSetCurDate(sess.UserIDGet(), d); err != nil {
+	if _, err := bCtx.m.SettingsSet(mysql.SettingsSetData{
+		TlgrmChatID: sess.UserIDGet(),
+		CurrentDate: time.Now().Format("2006-01-02"),
+	}); err != nil {
 		return tg.CommandHandlerRes{}, err
 	}
 
@@ -95,7 +97,10 @@ func calendarCallback(t *tg.Telegram, sess *tg.Session, identifier string) (tg.C
 			return r, fmt.Errorf("can not extract user context in calendar callback handler")
 		}
 
-		if err := bCtx.m.SettingsSetCurDate(sess.UserIDGet(), value); err != nil {
+		if _, err := bCtx.m.SettingsSet(mysql.SettingsSetData{
+			TlgrmChatID: sess.UserIDGet(),
+			CurrentDate: value,
+		}); err != nil {
 			return r, err
 		}
 

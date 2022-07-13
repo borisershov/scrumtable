@@ -1,7 +1,7 @@
 package ctx
 
 import (
-	"github.com/nixys/scrumtable/db/mysql"
+	"github.com/nixys/scrumtable/ds/mysql"
 	tgbot "github.com/nixys/scrumtable/modules/bot"
 
 	appctx "github.com/nixys/nxs-go-appctx/v2"
@@ -27,7 +27,7 @@ func (c *Ctx) Init(opts appctx.CustomContextFuncOpts) (appctx.CfgData, error) {
 	c.Conf = conf
 
 	// Connect to MySQL
-	c.MySQL, err = mysql.Connect(mysql.Settings{
+	c.MySQL, err = mysql.Connect(mysql.Param{
 		Host:     c.Conf.MySQL.Host,
 		Database: c.Conf.MySQL.DB,
 		User:     c.Conf.MySQL.User,

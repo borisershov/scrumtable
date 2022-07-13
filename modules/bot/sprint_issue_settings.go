@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/scrumtable/ds/mysql"
 )
 
 func sprintIssueSettingsState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
@@ -118,7 +119,11 @@ func sprintIssueSettingsCallback(t *tg.Telegram, sess *tg.Session, identifier st
 			done = false
 		}
 
-		if err := bCtx.m.SprintIssueSetDone(sprintIssueID, sess.UserIDGet(), done); err != nil {
+		if _, err := bCtx.m.SprintIssueUpdate(mysql.SprintIssueUpdateData{
+			ID:          sprintIssueID,
+			TlgrmChatID: sess.UserIDGet(),
+			Done:        &done,
+		}); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 
@@ -148,14 +153,24 @@ func sprintIssueSettingsCallback(t *tg.Telegram, sess *tg.Session, identifier st
 			}
 		}
 
+		g := true
 		// Set current issue as sprint goal
-		if err := bCtx.m.SprintIssueSetGoal(sprintIssueID, sess.UserIDGet(), true); err != nil {
+		if _, err := bCtx.m.SprintIssueUpdate(mysql.SprintIssueUpdateData{
+			ID:          sprintIssueID,
+			TlgrmChatID: sess.UserIDGet(),
+			Goal:        &g,
+		}); err != nil {
 			return tg.CallbackHandlerRes{}, err
 		}
 
 		// Remove `goal` mark from previous sprint issue
 		if idToUnGoal != 0 {
-			if err := bCtx.m.SprintIssueSetGoal(idToUnGoal, sess.UserIDGet(), false); err != nil {
+			g = false
+			if _, err := bCtx.m.SprintIssueUpdate(mysql.SprintIssueUpdateData{
+				ID:          idToUnGoal,
+				TlgrmChatID: sess.UserIDGet(),
+				Goal:        &g,
+			}); err != nil {
 				return tg.CallbackHandlerRes{}, err
 			}
 		}

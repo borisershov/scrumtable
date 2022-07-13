@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	tg "github.com/nixys/nxs-go-telegram"
+	"github.com/nixys/scrumtable/ds/mysql"
 )
 
 func sprintIssueSettingsEditState(t *tg.Telegram, sess *tg.Session) (tg.StateHandlerRes, error) {
@@ -57,7 +58,13 @@ func sprintIssueSettingsEditMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHan
 		return tg.MessageHandlerRes{}, fmt.Errorf("can not extract user context in sprintIssueSettingsEdit message handler")
 	}
 
-	if err := bCtx.m.SprintIssueUpdateText(sprintIssueID, sess.UserIDGet(), strings.Join(sess.UpdateChain().MessageTextGet(), "; ")); err != nil {
+	text := strings.Join(sess.UpdateChain().MessageTextGet(), "; ")
+
+	if _, err := bCtx.m.SprintIssueUpdate(mysql.SprintIssueUpdateData{
+		ID:          sprintIssueID,
+		TlgrmChatID: sess.UserIDGet(),
+		Text:        &text,
+	}); err != nil {
 		return tg.MessageHandlerRes{}, err
 	}
 
