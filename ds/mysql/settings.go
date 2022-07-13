@@ -2,6 +2,8 @@ package mysql
 
 import "github.com/nixys/scrumtable/misc"
 
+const SettingsTable = "settings"
+
 type Settings struct {
 	TlgrmChatID int64  `json:"tlgrm_chat_id" gorm:"primaryKey"`
 	CurrentDate string `json:"current_date"`
@@ -13,11 +15,11 @@ type SettingsSetData struct {
 }
 
 func (Settings) TableName() string {
-	return "settings"
+	return SettingsTable
 }
 
 func (SettingsSetData) TableName() string {
-	return "settings"
+	return SettingsTable
 }
 
 // SettingsSet adds new settings record into DB or update if exist

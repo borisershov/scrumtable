@@ -2,6 +2,8 @@ package mysql
 
 import "github.com/nixys/scrumtable/misc"
 
+const IssuesTable = "issues"
+
 // Issue contains issue data
 type Issue struct {
 	ID          int64  `json:"id" gorm:"primaryKey"`
@@ -32,15 +34,15 @@ type IssueUpdateData struct {
 }
 
 func (Issue) TableName() string {
-	return "issues"
+	return IssuesTable
 }
 
 func (IssueCreateData) TableName() string {
-	return "issues"
+	return IssuesTable
 }
 
 func (IssueUpdateData) TableName() string {
-	return "issues"
+	return IssuesTable
 }
 
 // IssueCreate creates new issue

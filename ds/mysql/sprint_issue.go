@@ -2,6 +2,8 @@ package mysql
 
 import "github.com/nixys/scrumtable/misc"
 
+const SprintIssuesTable = "sprint_issues"
+
 // Issue contains sprint issue data
 type SprintIssue struct {
 	ID          int64  `json:"id" gorm:"primaryKey"`
@@ -32,15 +34,15 @@ type SprintIssueUpdateData struct {
 }
 
 func (SprintIssue) TableName() string {
-	return "sprint_issues"
+	return SprintIssuesTable
 }
 
 func (SprintIssueCreateData) TableName() string {
-	return "sprint_issues"
+	return SprintIssuesTable
 }
 
 func (SprintIssueUpdateData) TableName() string {
-	return "sprint_issues"
+	return SprintIssuesTable
 }
 
 // SprintIssueCreate creates new sprint issue
