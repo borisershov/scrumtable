@@ -100,22 +100,12 @@ func sprintMsg(t *tg.Telegram, sess *tg.Session) (tg.MessageHandlerRes, error) {
 		}, nil
 	}
 
-	sprintIssues, err := bCtx.m.SprintIssuesGetByDate(sess.UserIDGet(), sprintDate)
-	if err != nil {
-		return tg.MessageHandlerRes{}, err
-	}
-
-	sprintGoal := false
-	if len(sprintIssues) == 0 {
-		sprintGoal = true
-	}
-
 	// Create new issue for every message line
 	for _, m := range strings.Split(strings.Join(sess.UpdateChain().MessageTextGet(), "\n"), "\n") {
 		if _, err := bCtx.m.SprintIssueCreate(mysql.SprintIssueCreateData{
 			TlgrmChatID: sess.UserIDGet(),
 			Date:        sprintDate,
-			Goal:        sprintGoal,
+			Goal:        false,
 			Done:        false,
 			Text:        m,
 		}); err != nil {
